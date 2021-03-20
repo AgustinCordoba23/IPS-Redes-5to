@@ -1,0 +1,171 @@
+\documentclass[12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\usepackage{float}
+\usepackage{parskip}
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{0 cm}{1 cm}{0 cm}{1 cm}
+
+\title{ABC de las Redes}																
+\date{\today}											
+
+\makeatletter
+\let\thetitle\@title
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{titlepage}
+	\centering
+    \vspace*{0.5 cm}
+    \includegraphics[scale = 0.75]{images/logo.png}\\[1.0 cm]	
+    \textsc{\LARGE \newline\newline Instituto Politécnico Superior}\\[2.0 cm]	
+	\textsc{\Large Redes Locales}\\[0.5 cm]				
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	\rule{\linewidth}{0.2 mm} \\[1.5 cm]
+	
+	\begin{minipage}{\textwidth}
+		\begin{center} \large
+			Rodríguez Costello, Alejandro\\
+            Córdoba, Agustín Leonel\\
+		\end{center}
+	\end{minipage}~
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Contexto teórico}
+
+La fusión de las computadoras y las comunicaciones ha tenido una profunda influencia en cuanto a la manera en que se organizan los sistemas de cómputo. El concepto una vez dominante del centro de cómputo como un salón con una gran computadora a la que los usuarios llevaban su trabajo para procesarlo es ahora totalmente obsoleto. El viejo modelo de una sola computadora para atender todas las necesidades computacionales de la organización se ha reemplazado por uno en el que un gran número de computadoras separadas pero interconectadas realizan el trabajo. A estos sistemas se los conoce como redes de computadoras. \\
+
+Se dice que dos computadoras están interconectadas si pueden intercambiar información. La conexión no necesita ser por cable, sino que existen diversos medios para tal fin. Las redes conformadas pueden adoptar diversos tamaños, figuras y formas. Por lo general, las computadoras se conectan entre sí para organizarse en redes más grandes, en donde Internet es el ejemplo más popular. \\
+
+Para fines prácticos, en la cátedra nos despojaremos del término $computadora$ y nos referiremos simplemente a $host$. La diferencia que existe entre ellos es que una computadora es un host. El término formal estipula que host puede referirse a computadoras u otros dispositivos (celulares, tablets, impresoras, etc.) conectados a una red que proveen y utilizan servicios de ella. 
+
+\subsection{Clasificaciónes de redes}
+
+No existe una clasificación aceptada en donde encajen todas las redes, pero hay dos que sobresalen de manera importante: la tecnología de transmisión y la escala. Veamos por parte cada una de ellas. \\
+
+En sentido general, existen dos tipos de tecnologías de transmisión que se emplean mucho en la actualidad: los enlaces de difusión (broadcast) y los enlaces punto a punto (P2P) que conectan pares individuales de hosts. En una red de difusión, todos los hosts comparten el canal de comunicación y los paquetes que envía uno de ellos es recibido por todos los demás. Se podría decir que existen tres tipos de hosts en ellas, el host emisor (quien origina el paquete), el host receptor (a quien el emisor dirige el paquete) y los hosts intermedios (que ignoran el paquete ya que no les pertenece). A su vez, existe la posibilidad de que un host emisor envíe paquetes a todos los demás hosts, esto se conoce como broadcasting; y además, la posibilidad de enviar paquetes a un subconjunto de hosts, conocido como multicasting. \\
+
+El criterio alternativo de clasificación de redes es su escala:
+
+\begin{figure}[H]
+    \includegraphics{images/clasificacion_redes.png}
+    \centering
+    \caption{Clasificación de hosts interconectados en base a escala}
+\end{figure}
+
+En la parte de arriba están las redes de área personal, las cuales están destinadas a una persona. Después se encuentran redes más grandes. Éstas se pueden dividir en redes de área local, de área metropolitana y de área amplia, cada una con una escala mayor que la anterior. Por último, a la conexión de dos o más redes se le conoce como interred. La Internet de nivel mundial es sin duda el mejor ejemplo (aunque no el único) de una interred. Pronto tendremos interredes aún más grandes con la Internet interplanetaria que conecta redes a través del espacio. 
+
+\subsection{Red de área local (LAN)}
+
+Las redes de área local, generalmente llamadas LAN, son las que especialmente nos van a interesar en un principio en el transcurso de esta materia. Las mismas son redes de propiedad privada que operan dentro de un solo edificio, como una casa, oficina o fábrica. Las redes LAN se utilizan ampliamente para conectar hosts personales y electrodomésticos con el fin de compartir recursos e intercambiar información. \\
+
+Las redes LAN alámbricas utilizan distintas tecnologías de transmisión. La mayoría utilizan cables de cobre, pero algunas usan fibra óptica. Las redes LAN tienen restricciones en cuanto a su tamaño, lo cual significa que el tiempo de transmisión en el peor de los casos es limitado y se sabe de antemano. Conocer estos límites facilita la tarea del diseño de los protocolos de red. Por lo  general las redes LAN alámbricas que operan a velocidades que van de los 100 Mbps hasta un 10 Gbps, tienen retardo bajo (microsegundos o nanosegundos) y cometen muy pocos errores. La topología de muchas redes LAN alámbricas está basada en los enlaces de punto a punto. El estándar IEEE 802.3, comúnmente conocido como Ethernet, es hasta ahora el tipo más común de LAN alámbrica. Cada host se comunica mediante el protocolo Ethernet y se conecta a una caja conocida como switch con un enlace de punto a punto. Un switch tiene varios puertos, cada uno de los cuales se puede conectar a un host. El trabajo del switch es transmitir paquetes entre los hosts conectados a él, y utiliza la dirección en cada paquete para determinar a qué host se lo debe enviar. Para crear redes LAN más grandes se pueden conectar switches entre sí mediante sus puertos. \\
+
+\begin{figure}[H]
+    \includegraphics{images/lan.png}
+    \centering
+    \caption{Red alámbrica IEEE 802.3}
+\end{figure}
+
+\subsection{Red de área amplia (WAN)}
+
+Luego, nos interesará conocer el funcionamiento de redes de áreas extensas que por lo general abarcan países o continentes y se las denomina WAN. En la mayoría de ellas, se pueden definir distintos componentes. Cada pequeña área cuenta con un determinado número de hosts. La red que se encarga de conectarlos entre sí, se la llama subred. La subred cuenta con dos componentes distintos: las líneas de transmisión y los elementos de conmutación. Las líneas de transmisión mueven bits entre hosts. Se pueden fabricar a partir de alambre de cobre, fibra óptica o incluso enlaces de radio. Los elementos de conmutación son hosts especializadas que conectan dos o más líneas de transmisión. Cuando los datos llegan por una línea entrante, el elemento de conmutación debe elegir una línea saliente hacia la cual reenviarlos. A dichos elementos se los conoce como enrutadores. \\  
+
+Por lo general, en una WAN los hosts y la subred pertenecen a distintas personas, quienes actúan también como operadores. Al separar los aspectos exclusivos de comunicación (la subred) de los aspectos relacionados con la aplicación (los hosts) se simplifica en forma considerable el diseño de la red en general. Cabe destacar que muchas redes LAN pueden conectarse a la subred y ésta es la manera general de constuir redes grandes a partir de otras más pequeñas. \\
+
+Al operador de la subred se le conoce como proveedor de servicios de red y se conecta con muchos otros clientes, siempre y cuando puedan pagar y les pueda proveer servicio. Como sería un servicio de red decepcionante si los clientes sólo pudieran enviarse paquetes entre sí, el operador de la subred también puede conectarse con otras redes que formen parte de Internet. A dicho operador de subred se le conoce como ISP (Proveedor de Servicios de
+Internet) y la subred es una red ISP. Los clientes que se conectan al ISP reciben servicio de Internet. \\
+
+\begin{figure}[H]
+    \includegraphics[width=15cm, height=5cm]{images/wan.png}
+    \centering
+    \caption{Representación de red WAN}
+\end{figure}
+
+\newpage
+
+\section{Modelos de referencia}
+
+Las primeras redes de computadoras se diseñaron teniendo en cuenta al hardware como punto principal y al software como secundario. Pero esta estrategia ya no funciona. Ahora el software de red está muy estructurado. Para reducir la complejidad de su diseño, la mayoría de las redes se organizan como una pila de capas o niveles, cada una construida a partir de la que está abajo. El número de capas, su nombre, el contenido de cada una y su función difieren de una red a otra. El propósito de cada capa es ofrecer ciertos servicios a las capas superiores, mientras les oculta los detalles relacionados con la forma en que se implementan los servicios ofrecidos. Es decir, cada capa es un tipo de máquina virtual que ofrece ciertos servicios a la capa que está encima de ella. \\
+
+Cuando la capa $n$ en un host lleva a cabo una conversación con la capa $n$ en otro host, a las reglas y convenciones utilizadas en esta conversación se les conoce como el protocolo de la capa $n$. En esencia, un protocolo es un acuerdo entre las partes que se comunican para establecer la forma en que se llevará a cabo esa comunicación. De manera genérica podríamos esbozar el modelo descripto de la siguiente forma:
+
+\begin{figure}[H]
+    \includegraphics[width=10cm, height=8cm]{images/capas_gen.png}
+    \centering
+    \caption{Capas, protocolos e interfaces}
+\end{figure}
+
+En realidad no se transfieren datos de manera directa desde la capa $n$ de una máquina a la capa $n$ de otra máquina, sino que cada capa pasa los datos y la información de control a la capa inmediatamente inferior, hasta que se alcanza a la capa más baja. Debajo de la capa 1 se encuentra el medio físico a través del cual ocurre la comunicación real. Entre cada par de capas adyacentes hay una interfaz. Ésta define las operaciones y servicios primitivos que pone la capa más baja a disposición de la capa superior inmediata. Cuando los diseñadores de
+redes deciden cuántas capas incluir en una red y qué debe hacer cada una, la consideración más importante es definir interfaces limpias entre las capas. \\
+
+A un conjunto de capas y protocolos se le conoce como arquitectura de red. La especificación de una arquitectura debe contener suficiente información como para permitir que un programador escriba el programa o construya el hardware para cada capa, de manera que se cumpla correctamente el protocolo apropiado. Ni los detalles de la implementación ni la especificación de las interfaces forman parte de la arquitectura, ya que están ocultas dentro de los hosts y no se pueden ver desde el exterior. Ni siquiera es necesario que las interfaces en todas las máquinas de una red sean iguales, siempre y cuando cada host pueda utilizar todos los protocolos correctamente. La lista de protocolos utilizados por cierto sistema, un protocolo por capa, se le conoce como pila de protocolos. \\
+
+Los servicios y los protocolos son conceptos distintos. Un servicio es un conjunto de primitivas (operaciones) que una capa proporciona a la capa que está encima de ella. El servicio define qué operaciones puede realizar la capa en beneficio de sus usuarios, pero no dice nada sobre cómo se implementan estas operaciones. Un servicio se relaciona con una interfaz entre dos capas, en donde la capa inferior es el proveedor del servicio y la capa superior es el usuario. En contraste, un protocolo es un conjunto de reglas que rigen el formato y el significado de los paquetes o mensajes que intercambian las entidades iguales en una capa. Las entidades utilizan protocolos para implementar sus definiciones de servicios. Pueden cambiar sus protocolos a voluntad, siempre y cuando no cambien el servicio visible para sus usuarios. De esta manera, el servicio y el protocolo no dependen uno del otro. \\
+
+Ahora que hemos analizado en lo abstracto las redes basadas en capas, es tiempo de ver algunos ejemplos. Analizaremos dos arquitecturas de redes importantes: el modelo de referencia OSI y el modelo de referencia TCP/IP. Aunque ya casi no se utilizan los protocolos asociados con el modelo OSI, el modelo en sí es bastante general y sigue siendo válido; asimismo, las características en cada nivel siguen siendo muy importantes. El modelo TCP/IP tiene las propiedades opuestas: el modelo en sí no se utiliza mucho, pero los protocolos son usados ampliamente. Por esta razón veremos ambos elementos con detalle.
+
+\subsection{Modelo OSI}
+
+El modelo OSI se muestra en la figura a continuación. Este modleo cuenta con siete capas (acrónimo FERTSPA de física-enlace-red-transporte-sesión-presentación-aplicación). A continuación estudiaremos cada capa del modelo en orden, empezando por la capa inferior. Tenga en cuenta que el modelo OSI en sí no es una arquitectura de red, ya que no especifica los servicios y protocolos exactos que se van a utilizar en cada capa. Sólo indica lo que una debe hacer. Sin embargo, la ISO (Organización Internacional de Normas) también ha elaborado estándares para todas las capas, aunque no son parte del modelo de referencia en sí. Cada uno se publicó como un estándar internacional separado. \\
+
+\begin{figure}[H]
+    \includegraphics[width=12cm, height=10cm]{images/osi.png}
+    \centering
+    \caption{Capas, protocolos e interfaces}
+\end{figure}
+
+\paragraph{Capa física} Se relaciona con la transmisión de bits puros a través de un canal de transmisión. Los aspectos de diseño tienen que ver con la acción de asegurarse que cuando uno de los lados envíe un bit 1 el otro lado lo reciba como un bit 1, no como un bit 0. Los aspectos de diseño tienen que ver con las interfaces mecánica, eléctrica y de temporización, así como con el medio de transmisión físico que se encuentra bajo la capa física.
+
+\paragraph{Capa de enlace de datos} Su principal tarea es transformar un medio de transmisión puro en una línea que esté libre de errores de transmisión. Enmascara los errores reales, de manera que la capa de red no los vea. Para lograr esta tarea, el emisor divide los datos de entrada en tramas de datos (por lo general, de algunos cientos o miles de bytes) y transmite las tramas en forma secuencial. Si el servicio es confiable, para confirmar la recepción correcta de cada trama, el receptor devuelve una trama de confirmación de recepción. 
+
+\paragraph{Capa de red} Controla la operación de la subred. Una cuestión clave de diseño es determinar cómo se encaminan los paquetes desde el origen hasta el destino. Por otro lado, si hay demasiados paquetes en la subred al mismo tiempo, se interpondrán en el camino unos con otros y formarán cuellos de botella. El manejo de la congestión también es responsabilidad de esta capa, en conjunto con las capas superiores que adaptan la carga que colocan en la red. Otra cuestión más general de la capa de red es la calidad del servicio proporcionado (retardo, tiempo de tránsito, variaciones, entre otras).
+
+\paragraph{Capa de transporte} La función básica es aceptar datos de la capa superior, dividirlos en unidades más pequeñas si es necesario, pasar estos datos a la capa de red y asegurar que todas las piezas lleguen. correctamente al otro extremo. Además, todo esto se debe realizar con eficiencia y de una manera que aísle las capas superiores de los inevitables cambios en la tecnología de hardware que se dan con el transcurso del tiempo.
+
+\paragraph{Capa de sesión}  Permite a los usuarios en distintos hosts establecer sesiones entre ellos. Las sesiones ofrecen varios servicios, incluyendo el control del diálogo (llevar el control de quién va a transmitir), el manejo de tokens (evitar que dos partes intenten la misma operación crítica al mismo tiempo) y la sincronización (usar puntos de referencia en las transmisiones extensas para reanudar desde el último punto de referencia en caso de una interrupción).
+
+\paragraph{Capa de presentación} A diferencia de las capas inferiores, que se enfocan principalmente en mover los bits de un lado a otro, esta capa se enfoca en la sintaxis y la semántica de la información transmitida. Para hacer posible la comunicación entre hosts con distintas representaciones internas de datos, se puede definir de una manera abstracta las estructuras de datos que se van a intercambiar, junto con una codificación estándar que se use en el medio físico. La capa de presentación maneja estas estructuras de datos abstractas y permite definir e intercambiar estructuras de datos de mayor nivel.
+
+\paragraph{Capa de aplicación} Esta capa contiene una variedad de protocolos que los usuarios necesitan con frecuencia. Un ejemplo de ellos es el protocolo HTTP: cuando un navegador desea una página web, envía el nombre de la página que quiere al servidor que la hospeda mediante el uso de HTTP. Después el servidor envía la página de vuelta. Hay otros protocolos de aplicación que se utilizan para transferir archivos, enviar y recibir correo electrónico y noticias. 
+
+\subsection{Modelo TCP/IP}
+
+Pasemos ahora del modelo de referencia OSI al modelo de referencia que se utiliza en la más vieja de todas las redes de computadoras de área amplia: ARPANET y su sucesora, Internet.  ARPANET era una red de investigación patrocinada por el DoD (Departamento de Defensa de Estados Unidos). En un momento dado llegó a conectar cientos de universidades e instalaciones gubernamentales mediante el uso de líneas telefónicas rentadas. Cuando después se le unieron las redes de satélites y de radio, los protocolos existentes tuvieron problemas para interactuar con ellas, de modo que se necesitaba una nueva arquitectura de referencia. Así, casi desde el principio la habilidad de conectar varias redes sin problemas fue uno de los principales objetivos de diseño. Posteriormente esta arquitectura se dio a conocer como el Modelo de referencia TCP/IP, debido a sus dos protocolos primarios (el TCP y el IP). \\
+
+Este modelo, a diferencia del modelo OSI, divide su funcionamiento en 4 capas:
+
+\begin{figure}[H]
+    \includegraphics{images/tcp_ip.png}
+    \centering
+    \caption{Comparativa de modelos}
+\end{figure}
+
+\paragraph{Capa de enlace} Esta capa describe qué enlaces (como las líneas seriales y Ethernet clásica) se deben llevar a cabo para cumplir con las necesidades de la capa de interred. En realidad no es una capa en el sentido común del término, sino una interfaz entre los hosts y los enlaces de transmisión.
+
+\paragraph{Capa de interred} Esta capa es el eje que mantiene unida a toda la arquitectura. Su trabajo es permitir que los hosts inyecten paquetes en cualquier red y que viajen de manera independiente hacia el destino (que puede estar en una red distinta). Incluso pueden llegar en un orden totalmente diferente al orden en que se enviaron, en cuyo caso es responsabilidad de las capas más altas volver a ordenarlos, si se desea una entrega en orden. La capa de interred define un formato de paquete y un protocolo oficial llamado IP (Protocolo de Internet), además de un protocolo complementario llamado ICMP (Protocolo de Mensajes de Control de Internet) que le ayuda a funcionar. La tarea de la capa de interred es entregar los paquetes IP a donde se supone que deben ir. Aquí el ruteo de los paquetes es sin duda el principal aspecto, al igual que la congestión.
+
+\paragraph{Capa de transporte} Está diseñada para permitir que las entidades pares, en los nodos de origen y de destino, lleven a cabo una conversación, al igual que en la capa de transporte de OSI. Aquí se definen dos protocolos de transporte de extremo a extremo. El primero, TCP (Protocolo de Control de la Transmisión), es un protocolo confiable orientado a la conexión que permite que un flujo de bytes originado en un host se entregue sin errores a cualquier otro host en la interred. El segundo protocolo, UDP (Protocolo de Datagrama de Usuario), es un protocolo sin conexión, no confiable para aplicaciones que no desean la asignación de secuencia o el control de flujo de TCP y prefieren proveerlos por su cuenta.
+
+\paragraph{Capa de aplicación} El modelo TCP/IP no tiene capas de sesión o de presentación, ya que no se consideraron necesarias. Las aplicaciones simplemente incluyen cualquier función de sesión y de presentación que requieran. La experiencia con el modelo OSI ha demostrado que esta visión fue correcta: estas capas se utilizan muy poco en la mayoría de las aplicaciones. La capa de aplicación contiene todos los protocolos de alto nivel. \\
+
+En lo que a nuestra materia respecta, este año desarrollaremos las capas de enlace de datos y de red del modelo OSI. Cada una se verá en detalle en documentos sucesivos y realizaremos a su vez ejemplos prácticos que nos ayuden a comprenden cómo funciona cada una de ellas en detalle. 
+
+\end{document}
