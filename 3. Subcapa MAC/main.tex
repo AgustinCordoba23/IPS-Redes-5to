@@ -49,22 +49,25 @@
 
 \vspace{15cm}
 
-Documento creado bajo licencia Creative Commons Zero v1.0 Universal. Versión 2021-1.0. Consultas o sugerencias: agustincordoba28@gmail.com 
+Documento creado bajo licencia Creative Commons Zero v1.0 Universal. Versión 2021-1.1. Consultas o sugerencias: agustincordoba28@gmail.com 
 
 \newpage
 
 \section{Asignación de canal}
 
 Los enlaces de red se pueden dividir en dos categorías: los que utilizan conexiones punto a
-punto y los que utilizan canales de difusión. En el apunte anterior, hemos tratado con los primeros, mientras que en este, se verán los segundos. \\
+punto y los que utilizan canales de difusión. En el apunte anterior, hemos hecho una primera introducción a los primeros, en este se plantea profundizar los conceptos e ir un poco más allá abordando los segundos. \\
 
-En cualquier red de difusión, el asunto clave es la manera de determinar quién puede utilizar el canal cuando tiene competencia por él. Los protocolos que se utilizan para determinar quién sigue en un canal (de multiacceso) pertenecen a una subcapa de la capa de enlace de datos llamada subcapa MAC (Control de Acceso al Medio). La subcapa MAC tiene especial importancia en las LAN, en especial las inalámbricas puesto que el canal inalámbrico es de difusión por naturaleza. En contraste, las WAN usan muchos enlaces punto a punto, excepto en las redes satelitales. El tema principal de este apunte será el control del canal. \\
+En cualquier red de difusión, el asunto clave es la manera de determinar quién puede utilizar el canal cuando tiene competencia por él. No tiene sentido discutir dicha competencia cuando la conexión se establece punto a punto, es por ello que nos tocará discutirlos aquí. Los protocolos que se utilizan para determinar quién sigue en un canal (de multiacceso) pertenecen a una subcapa de la capa de enlace de datos llamada subcapa MAC (Control de Acceso al Medio). La subcapa MAC tiene especial importancia en las LAN, en especial las inalámbricas puesto que el canal inalámbrico es de difusión por naturaleza. En contraste, las WAN usan muchos enlaces punto a punto, excepto en las redes satelitales. El tema principal de este apunte será el control del canal. \\
 
-La manera tradicional de asignar un solo canal, como una troncal telefónica, entre múltiples usuarios competidores es dividir su capacidad mediante el uso de esquemas de multiplexión tales como FDM (Multiplexación por División de Frecuencia): si hay $N$ usuarios, el ancho de banda se divide en $N$ partes de igual tamaño, y a cada usuario se le asigna una parte. Debido a que cada usuario tiene una banda de frecuencia privada, no existe interferencia entre ellos. Cuando sólo hay una pequeña cantidad fija y constante de usuarios, cada uno tiene un flujo estable. Sin embargo, cuando el número de emisores es grande y varía continuamente, el FDM presenta algunos problemas. Si el espectro se divide en $N$ regiones y actualmente hay menos de $N$ usuarios interesados en comunicarse, se desperdicia una buena parte del valioso espectro. Y si más de $N$ usuarios quieren comunicarse, a algunos de ellos se les niega el permiso por falta de ancho de banda, aun cuando algunos de los usuarios que tengan asignada una banda de frecuencia apenas transmitan o reciban algo. \\
+La manera tradicional de asignar un solo canal, como una troncal telefónica, entre múltiples usuarios competidores es dividir su capacidad mediante el uso de esquemas de multiplexión. La multiplexación comprende los métodos que, tanto analógica como digitalmente, combinan señales de datos en un mismo canal de comunicación (considerado como un recurso escaso). Para ello se utiliza un dispositivo denominado multiplexador (MUX) y uno que realiza el trabajo inverso llamado desmultiplexador (DEMUX). La desmultiplexación tiene concretamente el objetivo contrario a la multiplexación, es decir, quebrar el enlace único de datos en varias señales y distribuirlas luego en distintos canales simultáneamente. \\
+
+
+Existen distintos modelos, tales como FDM (Multiplexación por División de Frecuencia): si hay $N$ usuarios, el ancho de banda se divide en $N$ partes de igual tamaño, y a cada usuario se le asigna una parte. Debido a que cada usuario tiene una banda de frecuencia privada, no existe interferencia entre ellos. Cuando sólo hay una pequeña cantidad fija y constante de usuarios, cada uno tiene un flujo estable. Sin embargo, cuando el número de emisores es grande y varía continuamente, el FDM presenta algunos problemas. Si el espectro se divide en $N$ regiones y actualmente hay menos de $N$ usuarios interesados en comunicarse, se desperdicia una buena parte del valioso espectro. Y si más de $N$ usuarios quieren comunicarse, a algunos de ellos se les niega el permiso por falta de ancho de banda, aun cuando algunos de los usuarios que tengan asignada una banda de frecuencia apenas transmitan o reciban algo. \\
 
 Aun suponiendo que el número de usuarios podría, de alguna manera, mantenerse constante en $N$, dividir el único canal disponible en varios subcanales estáticos es ineficiente por naturaleza. El problema básico es que, cuando algunos usuarios están inactivos, su ancho de banda simplemente se pierde. No lo están usando, y a nadie más se le permite usarlo. Una asignación estática es un mal arreglo para la mayoría de los sistemas de cómputos. \\
 
-Precisamente los mismos argumentos que se aplican a la FDM se adaptan a otras formas de dividir estáticamente el canal. Si se usara la Multiplexión por División de Tiempo (TDM) y a cada usuario se le asignara cada $N$-ésima ranura de tiempo, en caso de que un usuario no utilizara la ranura asignada, simplemente se desperdicia. \\
+Precisamente los mismos argumentos que se aplican a la FDM se adaptan a otras formas de dividir estáticamente el canal. Si se usara la Multiplexión por División de Tiempo (TDM) y a cada usuario se le asignara cada $N$-ésima ranura de tiempo, en caso de que un usuario no utilizara la ranura asignada, simplemente se desperdicia. Cabe destacar aquí, como ya han podido observar, que en los métodos de multiplexación no existe competencia por el canal ya que el mismo se organiza de forma tal de evitarla pero permitiedo su uso múltiple.\\
 
 \begin{figure}[H]
     \centering
@@ -72,7 +75,7 @@ Precisamente los mismos argumentos que se aplican a la FDM se adaptan a otras fo
     \caption{Asignación estática: TDM vs FDM}
 \end{figure}
 
-Para solucionar estos problemas, se desarrollaron los métodos de asignación dinámica de canal. Todos ellos comparten (en mayor o menor medida), los siguientes supuestos:
+Para solucionar estos problemas, se desarrollaron métodos de asignación dinámica de canal (muy usado en LAN) y de multiplexación pero basado en estadística (que no se abordará en la cátedra). Todos ellos comparten (en mayor o menor medida), los siguientes supuestos:
 
 \begin{itemize}
     \item Tráfico independiente. El modelo consiste en $N$ hosts independientes, cada uno con un programa o usuario que genera tramas para transmisión. Una vez que se ha generado una trama, el host se bloquea y no hace nada sino hasta que la trama se haya transmitido con éxito.
@@ -117,15 +120,22 @@ Aunque el ALOHA ranurado ofrece un poco más de orden al canal, aún pueden ocur
 \subsection{Protocolos de detección de portadora}
 
 Los protocolos en los que las estaciones escuchan una portadora (es decir, una transmisión) y actúan de manera acorde se llaman protocolos de detección de portadora. El primer protocolo de detección de portadora que estudiaremos se llama CSMA (Acceso Múltiple con Detección de Portadora) persistente-1. Cuando una estación tiene datos por enviar, primero
-escucha el canal para saber si alguien más está transmitiendo en ese momento. Si el canal está inactivo, la estación envía sus datos. Por el contrario, si el canal está ocupado, la estación espera hasta que se desocupa. A continuación, la estación transmite una trama. Si ocurre una colisión, la estación espera una cantidad aleatoria de tiempo y comienza de nuevo. El protocolo se llama persistente-1 porque la estación transmite con una probabilidad de 1 (es decir, siempre) cuando encuentra que el canal está inactivo. \\
+escucha el canal para saber si alguien más está transmitiendo en ese momento. Si el canal está inactivo, la estación envía sus datos. Por el contrario, si el canal está ocupado, la estación espera hasta que se desocupa. A continuación, la estación transmite una trama. Si ocurre una colisión, la estación espera una cantidad aleatoria de tiempo y comienza de nuevo. El protocolo se llama persistente-1 porque la estación transmite con una chance del 100\% (es decir, siempre) cuando encuentra que el canal está inactivo. \\
 
 Podría esperarse que este esquema evite las colisiones, excepto en el extraño caso de los envíos simultáneos, pero de hecho no lo hace. Si dos estaciones están listas a la mitad de la transmisión de una tercera estación, ambas esperarán amablemente hasta que termine la transmisión y después ambas empezarán a transmitir exactamente al mismo tiempo, lo cual producirá una colisión. Si no fueran tan impacientes, habría menos colisiones. Aun así, este protocolo tiene un mejor desempeño que el ALOHA puro, ya que ambas estaciones tienen la decencia de dejar de interferir con la trama de la tercera estación. \\
 
 Un segundo protocolo de detección de portadora es el CSMA no persistente. En este protocolo
 se hace un intento consciente por ser menos egoísta que en el previo. Como antes, una estación escucha el canal cuando desea enviar una trama y, si nadie más está transmitiendo, comienza a hacerlo. Pero si el canal ya está en uso, la estación no lo escuchará de manera continua con el fin de tomarlo de inmediato al detectar el final de la transmisión anterior, sino que esperará un periodo aleatorio y repetirá el algoritmo. En consecuencia, este algoritmo conduce a un mejor uso del canal pero produce mayores retardos que el CSMA persistente-1. \\
 
-El último protocolo es el CSMA persistente-p, que se aplica a canales ranurados. Cuando una estación está lista para enviar, escucha el canal. Si se encuentra inactivo, la estación transmite con una probabilidad $p$. Con una probabilidad $q = 1 - p$, se posterga hasta
-la siguiente ranura. Si esa ranura también está inactiva, la estación transmite o posterga una vez más, con probabilidades $p$ y $q$. Este proceso se repite hasta que se transmite la trama o hasta que otra estación comienza a transmitir. \\
+El último protocolo es el CSMA persistente-p, que se aplica a canales ranurados. Cuando una estación está lista para enviar, escucha el canal. Si se encuentra inactivo, la estación transmite con una chance $p$ (por ejemplo, de 30\%). Con una chance contraria $q$ (siguiendo el ejemplo, de 70\%), se posterga hasta la siguiente ranura. Si esa ranura también está inactiva, la estación transmite o posterga una vez más, con chances $p$ y $q$. Este proceso se repite hasta que se transmite la trama o hasta que otra estación comienza a transmitir. \\
+
+En la siguiente figura, se puede observar la velocidad real calculada con el tráfico ofrecido para los tres protocolos, así como para el ALOHA puro y el ranurado.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=14cm, height=7cm]{images/velocidades.png}
+    \caption{Comparación de la utilización del canal contra la carga para varios protocolos de acceso aleatorio}
+\end{figure}
 
 En definitiva, los protocolos CSMA persistentes y no persistentes son una mejora respecto a ALOHA porque aseguran que ninguna estación empezará a transmitir mientras el canal esté ocupado. Pero si dos estaciones detectan que el canal está inactivo y empiezan a transmitir al mismo tiempo, sus señales de todas formas sufrirán una colisión. Otra mejora es que las estaciones detecten rápidamente la colisión y dejen de transmitir de inmediato (en vez de terminadas las transmisiones), ya que de todas formas se alterarán y no se podrán recuperar. Este protocolo, conocido como CSMA/CD (CSMA con Detección de Colisiones), es la base de la clásica LAN Ethernet. Es importante tener en cuenta que la detección de colisiones es un proceso analógico. El hardware de la estación debe escuchar el canal mientras transmite. Si la señal que recibe es distinta de la señal que está enviando, sabe que está ocurriendo una colisión. \\
 
@@ -141,28 +151,17 @@ Aunque las colisiones no ocurren en CSMA/CD una vez que una estación ha captura
 
 \subsection{Protocolos libres de colisiones}
 
-El primer protocolo libre de colisiones es el método básico de mapa de bits. Cada periodo de
-contención consiste exactamente de $N$ ranuras. Si la estación 0 tiene una trama por enviar, transmite un bit 1 durante la ranura 0. No está permitido a ninguna otra estación transmitir durante esta ranura. Sin importar lo que haga la estación 0, la estación 1 tiene la oportunidad de transmitir un bit 1 durante la ranura 1, pero sólo si tiene una trama puesta en la cola. En general, la estación $j$ puede anunciar que tiene una trama por enviar, para lo cual inserta un bit 1 en la ranura $j$. Una vez que han pasado las $N$ ranuras, cada estación tiene un completo conocimiento acerca de cuáles son las estaciones que quieren transmitir. En ese punto, las estaciones empiezan a transmitir en orden numérico. \\
+Un protocolo libre de colisiones se podría estructurar de forma de lograr pasar un pequeño mensaje conocido como $token$ de una estación a otra, en un orden predefinido. El token representa el permiso para enviar. Si una estación tiene una trama puesta en cola para transmitirla cuando recibe el token, puede enviar esa trama antes de pasar el token a la siguiente estación. Si no tiene una trama puesta en cola, simplemente pasa el token. A este protocolo se lo denomina token ring En él, la topología de la red se utiliza para definir el orden en el que las estaciones envían información. Las estaciones están conectadas una con otra en un solo anillo. Así, el proceso de pasar el token a la siguiente estación consiste en recibir el token proveniente de una dirección y transmitirlo hacia la otra dirección. Las tramas también se transmiten en la dirección del token. De esta forma, circularán alrededor del anillo y llegarán a la estación de destino. \\
 
-Como todos están de acuerdo en quién sigue a continuación, nunca habrá colisiones. Una vez que la última estación lista haya transmitido su trama, un evento que pueden detectar fácilmente todas las estaciones, comienza otro periodo de contención de $N$ bits. Si una estación está lista justo después de que ha pasado su ranura de bit, ha tenido mala suerte y deberá permanecer inactiva hasta que cada una de las demás estaciones haya tenido su oportunidad y el mapa de bits haya comenzado de nuevo. Los protocolos como éste en los que el interes de transmitir se difunde antes de la transmisión se llaman protocolos de reservación, debido a que reservan la propiedad del canal por anticipado y evitan colisiones. 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[height=2.5cm, width=14cm]{images/mapa_bits.png}
-    \caption{Método básico de mapa de bits}
-\end{figure}
-
-La esencia del protocolo de mapa de bits es que permite que cada estación transmita una trama por turno, en un orden predefinido. Otra forma de lograr lo mismo es pasar un pequeño mensaje conocido como $token$ de una estación a otra, en el mismo orden predefinido. El token representa el permiso para enviar. Si una estación tiene una trama puesta en cola para transmitirla cuando recibe el token, puede enviar esa trama antes de pasar el token a la siguiente estación. Si no tiene una trama puesta en cola, simplemente pasa el token. En un protocolo token ring, la topología de la red se utiliza para definir el orden en el que las estaciones envían información. Las estaciones están conectadas una con otra en un solo anillo. Así, el proceso de pasar el token a la siguiente estación consiste en recibir el token proveniente de una dirección y transmitirlo hacia la otra dirección. Las tramas también se transmiten en la dirección del token. De esta forma, circularán alrededor del anillo y llegarán a la estación de destino. \\
-
-El desempeño del protocolo de paso de token es similar al del protocolo de mapa de bits, aunque las ranuras de contención y las tramas de un ciclo están ahora entremezcladas. Después de enviar una trama, cada estación debe esperar a que las $N$ estaciones (incluyéndose a sí misma) envíen el token a sus estaciones vecinas y que las otras $N – 1$ estaciones envíen una trama, si es que la tienen.
+Después de enviar una trama, cada estación debe esperar a que las $N$ estaciones (incluyéndose a sí misma) envíen el token a sus estaciones vecinas y que las otras $N – 1$ estaciones envíen una trama, si es que la tienen.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=4.5cm, width=7cm]{images/token_ring.png}
+    \includegraphics[height=4.5cm, width=7.5cm]{images/token_ring.png}
     \caption{Protocolo token ring}
 \end{figure}
 
-Un problema con el protocolo básico de mapa de bits, y en consecuencia con el paso de token, es que la sobrecarga es de 1 bit por estación, por lo que no se escala bien en redes con miles de estaciones. Se puede tener mejores resultados si se usan direcciones de estación binarias con un canal que combine las transmisiones. Una estación que quiere utilizar el canal en un momento dado difunde su dirección como una cadena binaria de bits, comenzando por el bit de mayor orden. Se supone que todas las direcciones tienen la misma longitud. A todos los bits en cada posición de dirección de las diferentes estaciones se les aplica un OR BOOLEANO por el canal cuando se envían al mismo tiempo. A este protocolo se lo llama conteo descendente binario. \\
+Un problema con este protocolo, es que la sobrecarga es de 1 bit por estación, por lo que no se escala bien en redes con miles de estaciones. Se puede tener mejores resultados si se usan direcciones de estación binarias con un canal que combine las transmisiones. Una estación que quiere utilizar el canal en un momento dado difunde su dirección como una cadena binaria de bits, comenzando por el bit de mayor orden. Se supone que todas las direcciones tienen la misma longitud. A todos los bits en cada posición de dirección de las diferentes estaciones se les aplica un OR BOOLEANO por el canal cuando se envían al mismo tiempo. A este protocolo se lo llama conteo descendente binario. \\
 
 Para evitar conflictos, es necesario aplicar una regla de arbitraje: tan pronto como una estación ve que una posición de bit de orden alto, cuya dirección es 0, ha sido sobrescrita con un 1, se da por vencida. Por ejemplo, si las estaciones 0010, 0100, 1001 y 1010 están tratando de obtener el canal, en el primer tiempo de bit las estaciones transmiten 0, 0, 1 y 1, respectivamente. A éstos se les aplica el OR para formar un 1. Las estaciones 0010 y 0100 ven el 1 y saben que una estación de mayor numeración está compitiendo por el canal, por lo que se dan por vencidas durante esta ronda. Las estaciones 1001 y 1010 continúan. El siguiente bit es 0, y ambas estaciones continúan. El siguiente bit es 1, por lo que la estación 1001 se da por vencida. La ganadora es la estación 1010, debido a que tiene la dirección más alta. Después de ganar la contienda, ahora puede transmitir una trama, después de lo cual comienza otro ciclo de contienda. \\
 
