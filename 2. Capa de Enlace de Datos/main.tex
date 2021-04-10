@@ -49,7 +49,7 @@
 
 \vspace{12cm}
 
-Documento creado bajo licencia Creative Commons Zero v1.0 Universal. Versión 2021-0.1. Consultas o sugerencias: agustincordoba28@gmail.com 
+Documento creado bajo licencia Creative Commons Zero v1.0 Universal. Versión 2021-1.1. Consultas o sugerencias: agustincordoba28@gmail.com 
 
 \newpage
 
@@ -143,6 +143,7 @@ Una solución general es hacer que el receptor proporcione retroalimentación al
 
 Al igual que en el protocolo simplex, el emisor comienza obteniendo un paquete de la capa de red, lo usa para construir una trama y enviarla a su destino. Sólo que ahora, el emisor debe esperar hasta que llegue una trama de confirmación de recepción antes de reiniciar el ciclo y obtener el siguiente paquete de la capa de red. La capa de enlace de datos emisora ni siquiera necesita inspeccionar la trama entrante, ya que sólo hay una posibilidad. La trama entrante siempre es de confirmación de recepción y se la denomina ACK. \\
 
+
 \begin{figure}[H]
     \centering
     \includegraphics[height=7cm, width=9cm]{images/simplex_pe.png}
@@ -167,16 +168,21 @@ variable cuyo valor se recuerda mientras la capa de enlace de datos está en est
 
 Después de transmitir una trama e iniciar el temporizador, el emisor espera a que ocurra algo interesante. Sólo hay tres posibilidades: que una trama de confirmación de recepción llegue sin daño, que llegue una trama de confirmación de recepción dañada o que expire el temporizador. Si entra una confirmación de recepción válida, el emisor obtiene el siguiente paquete de su capa de red y lo coloca en el búfer, sobreescribiendo el paquete anterior. También incrementa el número de secuencia. Si llega una trama dañada o expira el temporizador, no cambia ni el búfer ni el número de secuencia de modo que se pueda enviar un duplicado. En todos los casos se envía a continuación el contenido del búfer (ya sea el siguiente paquete o un duplicado). Cuando llega una trama válida al receptor, su número de secuencia se verifica para saber si es un duplicado. Si no lo es, se acepta, se pasa a la capa de red y se genera una confirmación de recepción. Los duplicados y las tramas dañadas no se pasan a la capa de red, pero hacen que se confirme la recepción de la última trama que se recibió correctamente para avisar al emisor de modo que avance a la siguiente trama o retransmita la trama dañada. \\
 
-Como proposición al alumno, la cátedra recomienda tratar de implementar las tres variantes vistas en lenguaje C o similar, por ejemplo, Python. Para ello se deben crear pequeñas rutinas que implementen tanto el emisor como el receptor y una rutina principal que coordine cada protocolo. 
+Las métodos que hemos visto hasta aquí de parada y espera son ineficientes en cuanto al uso del canal, su rendimiento se asemeja a una fracción de lo que en realidad podría ser. Esto se debe a que el tiempo entre paquetes, en el caso de que los ACK y los datos sean recibidos satisfactoriamente, es el doble del tiempo de transmisión (suponiendo que el tiempo que tardan las máquinas en procesar y responder la información es cero). Es por ello que pasaremos a estudiar a continuación cómo es que se puede optimizar esta situación al punto de que la transmisión de datos sea lo más eficiente posible. \\
+
 
 \newpage
 \section{Transmisión confiable: protocolos de ventana deslizante}
 
 En los protocolos anteriores, las tramas de datos se transmitían en una sola dirección. En la mayoría de las situaciones prácticas existe la necesidad de transmitir datos en ambas direcciones. Una manera de lograr una transmisión de datos como esta es tener dos instancias de uno de los protocolos anteriores, cada uno de los cuales debe usar un enlace separado para el tráfico de datos simplex (en distintas direcciones). A su vez, cada enlace se conformaría de un canal de “ida” (para los datos) y de un canal de “retorno” (para las confirmaciones de recepción). Sin embargo,  en ambos casos se desperdiciaría la capacidad del canal de retorno casi por completo. \\
 
-Una mejor idea es utilizar el mismo enlace para datos en ambas direcciones. Aunque intercalar datos y tramas de control en el mismo enlace es una gran mejora respecto al uso de dos enlaces físicos separados, es posible realizar otra mejora. Cuando llega una trama de datos, en lugar de enviar de inmediato una trama de control independiente, el receptor se aguanta y espera hasta que la capa de red le pasa el siguiente paquete. La confirmación de recepción se anexa a la trama de datos de salida. En efecto, la confirmación de recepción viaja gratuitamente. La técnica de retardar temporalmente las confirmaciones de recepción salientes para que puedan viajar en la siguiente trama de datos de salida se conoce como superposición. Sin embargo, la superposición introduce una complicación inexistente en las confirmaciones de recepción independientes. ¿Cuánto tiempo debe esperar la capa de enlace de datos un paquete al cual pueda superponer la confirmación de recepción? Si la capa de enlace de datos espera más tiempo del que tarda en terminar el temporizador del emisor, se volverá a transmitir la trama y se frustrará el propósito de enviar confirmaciones de recepción. Por supuesto que la capa de enlace de datos no puede predecir el futuro, de modo que debe recurrir a algún esquema particular para el caso. \\
+Una mejor idea es utilizar el mismo enlace para datos en ambas direcciones. Aunque intercalar datos y tramas de control en el mismo enlace es una gran mejora respecto al uso de dos enlaces físicos separados, es posible realizar otra mejora. Cuando llega una trama de datos, en lugar de enviar de inmediato una trama de control independiente, el receptor se aguanta y espera hasta que la capa de red le pasa el siguiente paquete. La confirmación de recepción se anexa a la trama de datos de salida. En efecto, la confirmación de recepción viaja gratuitamente. La técnica de retardar temporalmente las confirmaciones de recepción salientes para que puedan viajar en la siguiente trama de datos de salida se conoce como superposición. \\
 
-Los siguientes tres protocolos son bidireccionales y pertenecen a una clase llamada protocolos de ventana deslizante. Los tres difieren entre ellos en términos de eficiencia, complejidad y requerimientos de búfer. En ellos, al igual que en todos los protocolos de ventana deslizante, cada trama de salida contiene un número de secuencia que va desde 0 hasta algún número máximo. Por lo general este valor máximo es $2^{n}-1$, por lo que el número de secuencia encaja perfectamente en un campo de $n$ bits. \\
+La principal ventaja de usar la superposición en lugar de tener tramas de confirmación de recepción independientes, es un mejor aprovechamiento del ancho de banda disponible del canal. El campo ACK del encabezado de la trama ocupa sólo unos cuantos bits, mientras que una trama separada requeriría de un encabezado, la confirmación de recepción y una suma de verificación. Además, el envío de menos tramas casi siempre representa una carga de procesamiento más ligera en el receptor. \\
+
+Sin embargo, la superposición introduce una complicación inexistente en las confirmaciones de recepción independientes. ¿Cuánto tiempo debe esperar la capa de enlace de datos un paquete al cual pueda superponer la confirmación de recepción? Si la capa de enlace de datos espera más tiempo del que tarda en terminar el temporizador del emisor, se volverá a transmitir la trama y se frustrará el propósito de enviar confirmaciones de recepción. Por supuesto que la capa de enlace de datos no puede predecir el futuro, de modo que debe recurrir a algún esquema particular para el caso. \\
+
+Los siguientes tres protocolos son bidireccionales y pertenecen a una clase llamada protocolos de ventana deslizante. Los tres difieren entre ellos en términos de eficiencia, complejidad y requerimientos de búfer. En ellos, al igual que en todos los protocolos de ventana deslizante, cada trama de salida contiene un número de secuencia que va desde 0 hasta algún número máximo. Por lo general este valor máximo es $2^{n}-1$, por lo que el número de secuencia encaja perfectamente en un campo de $n$ bits. El método de parada y espera visto en la anterior sección, es en realidad un protocolo de ventana deslizante con un tamaño de $n = 1$. \\
 
 La esencia de todos los protocolos de ventana deslizante es que, en cualquier instante, el emisor mantiene un conjunto de números de secuencia que corresponde a las tramas que tiene permitido enviar. Se dice que estas tramas caen dentro de la ventana emisora. De manera similar, el receptor mantiene una ventana receptora correspondiente al conjunto de tramas que tiene permitido aceptar. La ventana del emisor y la del receptor no necesitan tener los mismos límites inferior y superior, ni siquiera el mismo tamaño. \\
 
@@ -208,7 +214,24 @@ Hay dos métodos básicos para manejar los errores durante la canalización. Una
     \caption{Ventana deslizante con retroceso N}
 \end{figure}
 
-En la anterior figura se puede ver el retroceso N para el caso en que la ventana del receptor es grande. Las tramas 0 y 1 se reciben y confirman de manera correcta. Sin embargo, la trama 2 se daña o pierde. El emisor, sin saber sobre este problema, continúa enviando tramas hasta que expira el temporizador para la trama 2. Después retrocede a la trama 2 y comienza con ella, enviando nuevamente las tramas 2, 3, 4, etc. \\
+En la anterior figura se puede ver el retroceso N para el caso en que la ventana del receptor es grande. Las tramas 0 y 1 se reciben y confirman de manera correcta. Sin embargo, la trama 2 se daña o pierde. El emisor, sin saber sobre este problema, continúa enviando tramas hasta que expira el temporizador para la trama 2. Después retrocede a la trama 2 y comienza con ella, enviando nuevamente las tramas 2, 3, 4, etc. 
+
+\subsubsection{Aprovechamiento de canal}
+
+Hasta ahora hemos supuesto que el tiempo de transmisión requerido para que una trama llegue al receptor más el necesario para que la confirmación de recepción regrese es insignificante. A veces esta suposición es totalmente falsa. En estas situaciones el tiempo de viaje de ida y vuelta prolongado puede tener implicaciones importantes para la eficiencia de la utilización del ancho de banda. \\
+
+Por ejemplo, consideremos un canal de satélite de 50 kbps con un retardo de propagación de ida y vuelta de 500 mseg. Imagine que intentamos utilizar el protocolo 4 para enviar tramas de 1000 bits por medio del satélite. En $t = 0$, el emisor empieza a enviar la primera trama. En $t = 20 mseg$ la trama se ha enviado por completo. En el mejor de los casos (sin esperas en el receptor y con una trama de confirmación de recepción corta), no es sino hasta $t = 270 mseg$ que la trama ha llegado por completo al receptor, y no es sino hasta $t = 520 mseg$ que ha llegado la confirmación de recepción de regreso al emisor. Esto implica que el emisor estuvo bloqueado durante 500/520 o 96\% del tiempo. En otras palabras, sólo se usó 4\% del ancho de banda disponible. Sin duda, la combinación de un tiempo de tránsito grande, un alto ancho de banda y una longitud de tramas corta es desastrosa en términos de eficiencia. \\
+
+Entonces, para encontrar un valor apropiado para $w$ necesitamos saber cuántas tramas pueden caber dentro del canal mientras se propagan del emisor al receptor. Esta capacidad se determina mediante el ancho de banda [bits/seg], multiplicado por el tiempo de tránsito [s] en un sentido, mejor conocido como producto de ancho de banda-retardo del enlace. Luego, podemos dividir esta cantidad entre el número de bits en una trama para expresar el producto como un número de tramas. Llamemos a esta cantidad $BD$. Entonces, $w$ debe ser establecido a $2BD + 1$. El doble del producto ancho de bandaretardo es el número de tramas que pueden quedar pendientes si el emisor envía en forma continua tramas cuando se considera el tiempo de ida y vuelta para recibir una confirmación de recepción. El $+ 1$ se debe a que no se enviará una trama de confirmación de recepción sino hasta recibir una trama completa. \\
+
+Para tamaños de ventana pequeños, el uso del enlace será de menos de 100\% debido a que el
+emisor estará bloqueado algunas veces. Podemos escribir la utilización como la fracción de tiempo que el emisor no está bloqueado:
+
+\begin{equation}
+    utilizacionCanal \leq \frac{w}{1+2BD}
+\end{equation}
+
+Este valor es un límite superior ya que no considera ningún tiempo de procesamiento de tramas y supone que la trama de confirmación de recepción tiene una longitud de cero, puesto que generalmente es corta. La ecuación muestra la necesidad de tener una ventana $w$ grande siempre que el producto ancho de banda-retardo también lo sea. Si el retardo es alto, el emisor agotará rápidamente su ventana incluso para un ancho de banda moderado.  Si el ancho de banda es alto, incluso para un retardo moderado, el emisor agotará su ventana con rapidez, a menos que tenga una ventana grande. Con el protocolo de parada y espera en el cual $w = 1$, si hay incluso una trama equivalente al retardo de propagación, la eficiencia será menor a 50\%. \\
 
 \subsection{Ventana deslizante con repetición selectiva}
 
@@ -227,7 +250,6 @@ Cuando se utiliza, si se recibe una trama dañada se descarta, pero las tramas e
 A menudo, la repetición selectiva se combina con el hecho de que el receptor envíe una confirmación de recepción negativa NAK al detectar un error. Las NAK estimulan la retransmisión antes de que el temporizador correspondiente expire y, por lo tanto, mejoran
 el rendimiento. \\
 
-Una vez más, la cátedra propone al alumno, tratar de implementar estos protocolos en lengujae C o Python. 
 
 \newpage
 \section{Anexo: Introducción a Packet Tracer}
@@ -280,7 +302,7 @@ La comprobación de la correcta configuración de los dispositivos, una vez que 
 
 Como actividad, se propone al alumno hacer una conexión básica entre dos dispositivos cualesquiera, arrastrandolos del área de dispositivos hacia el área de trabajo. \\
 
-Con esta información, ya es posible iniciar el trabajo práctico de Capa de Enlace de Datos disponible en el campus. El mismo debe estar correctamente justificado con los contenidos desarrollados en este informe y en el posterior, que se entregará en breve sobre la Subcapa de Acceso al Medio. 
+Con esta información, ya es posible iniciar el trabajo práctico de Capa de Enlace de Datos disponible en el campus. El mismo debe estar correctamente justificado con los contenidos desarrollados en este informe y en el posterior, referente a la Subcapa de Acceso al Medio.
 
 
 \end{document}
